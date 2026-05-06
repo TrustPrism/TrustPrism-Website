@@ -292,9 +292,12 @@ router.post("/login", loginLimiter, loginValidation, async (req, res) => {
     if (mfaRequired) {
         const providedMfa = req.body.mfa_token;
         if (!providedMfa) {
-             const mfaCode = Math.floor(100000 + Math.random() * 900000).toString();
-             
-             await pool.query("UPDATE users SET mfa_token = $1, mfa_token_expires = NOW() + INTERVAL '10 minutes' WHERE id = $2", [mfaCode, user.id]);
+             let mfaCode = user.mfa_token;
+             // Only generate a new code if there isn't one or if it has expired
+             if (!mfaCode || new Date() > new Date(user.mfa_token_expires)) {
+                 mfaCode = Math.floor(100000 + Math.random() * 900000).toString();
+                 await pool.query("UPDATE users SET mfa_token = $1, mfa_token_expires = NOW() + INTERVAL '10 minutes' WHERE id = $2", [mfaCode, user.id]);
+             }
 
              try {
                 await sendMfaEmail(email, mfaCode);

@@ -7,6 +7,8 @@ import "./User.css";
 import DashboardView from "./views/DashboardView";
 import StudyHistoryView from "./views/StudyHistoryView";
 import SettingsView from "./views/SettingsView";
+import FriendsView from "./views/FriendsView";
+import InsightsView from "./views/InsightsView";
 
 export default function User() {
   const { auth, setAuth } = useContext(AuthContext);
@@ -47,6 +49,10 @@ export default function User() {
         return <StudyHistoryView />;
       case "profile":
         return <SettingsView />;
+      case "friends":
+        return <FriendsView />;
+      case "insights":
+        return <InsightsView />;
       default:
         return (
           <DashboardView
@@ -81,14 +87,24 @@ export default function User() {
             Dashboard
           </a>
 
-          <a className={activeView === "profile" ? "active" : ""} onClick={() => setActiveView("profile")}>
-            <span className="material-icons-round">person</span>
-            My Profile
+          <a className={activeView === "history" ? "active" : ""} onClick={() => setActiveView("history")}>
+            <span className="material-icons-round">sports_esports</span>
+            Games
           </a>
 
-          <a className={activeView === "history" ? "active" : ""} onClick={() => setActiveView("history")}>
-            <span className="material-icons-round">history</span>
-            Study History
+          <a className={activeView === "friends" ? "active" : ""} onClick={() => setActiveView("friends")}>
+            <span className="material-icons-round">group</span>
+            Friends
+          </a>
+
+          <a className={activeView === "insights" ? "active" : ""} onClick={() => setActiveView("insights")}>
+            <span className="material-icons-round">insights</span>
+            Insights
+          </a>
+
+          <a className={activeView === "profile" ? "active" : ""} onClick={() => setActiveView("profile")}>
+            <span className="material-icons-round">person</span>
+            Profile
           </a>
         </nav>
 

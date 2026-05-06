@@ -29,6 +29,8 @@ import adminRoutes from "./routes/admin.js";
 import telemetryRoutes from "./routes/telemetry.js";
 import aiProxyRoutes from "./routes/aiProxy.js";
 import participantRoutes from "./routes/participant.js";
+import friendsRoutes from "./routes/friends.js";
+import analyticsRoutes from "./routes/analytics.js";
 console.log("✅ .env loaded:", {
   DB_HOST: process.env.DB_HOST,
   DB_NAME: process.env.DB_NAME,
@@ -117,6 +119,8 @@ app.use("/insights", apiLimiter);
 app.use("/admin", apiLimiter);
 app.use("/participant", apiLimiter);
 app.use("/notifications", apiLimiter);
+app.use("/friends", apiLimiter);
+app.use("/analytics", apiLimiter);
 
 // Serve uploaded files (consent forms, etc.)
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
@@ -143,6 +147,8 @@ app.use("/admin", adminRoutes);
 app.use("/api/telemetry", telemetryRoutes);
 app.use("/api/ai", aiProxyRoutes);
 app.use("/participant", participantRoutes);
+app.use("/friends", friendsRoutes);
+app.use("/analytics", analyticsRoutes);
 
 // TACC 3.03.03 — Category 14: Application Failures & Resource Issues
 // Global error handler — catches all unhandled errors forwarded via next(err)

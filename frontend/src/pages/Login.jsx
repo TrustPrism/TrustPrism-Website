@@ -13,11 +13,15 @@ export default function Login() {
   const [mfaToken, setMfaToken] = useState("");
   const [requiresMfa, setRequiresMfa] = useState(false);
   const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
   async function handleSubmit(e) {
     e.preventDefault();
+    if (isSubmitting) return;
+
     setErrors({});
+    setIsSubmitting(true);
 
     const validationErrors = validateLogin({
       email: email.trim(),
@@ -26,6 +30,7 @@ export default function Login() {
 
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
+      setIsSubmitting(false);
       return;
     }
 
@@ -39,6 +44,7 @@ export default function Login() {
       if (authData.requires_mfa) {
         setRequiresMfa(true);
         setErrors({ server: authData.message || "Please check your email/device for the MFA Hard Token PIN." });
+        setIsSubmitting(false);
         return;
       }
 
@@ -53,6 +59,7 @@ export default function Login() {
       else navigate("/user");
     } catch (err) {
       setErrors({ server: err.message });
+      setIsSubmitting(false);
     }
   }
 
@@ -92,6 +99,7 @@ export default function Login() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@university.edu"
+            disabled={isSubmitting}
           />
           {errors.email && <span className="error-text">{errors.email}</span>}
 
@@ -109,7 +117,7 @@ export default function Login() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="••••••••"
-            disabled={requiresMfa}
+            disabled={requiresMfa || isSubmitting}
           />
           {errors.password && (
             <span className="error-text">{errors.password}</span>
@@ -124,6 +132,7 @@ export default function Login() {
                 onChange={(e) => setMfaToken(e.target.value)}
                 placeholder="000000"
                 style={{ letterSpacing: "2px", textAlign: "center" }}
+                disabled={isSubmitting}
               />
             </div>
           )}
@@ -132,8 +141,8 @@ export default function Login() {
             <span className="error-text">{errors.server}</span>
           )}
 
-          <button type="submit" className="login-btn">
-            Login
+          <button type="submit" className="login-btn" disabled={isSubmitting}>
+            {isSubmitting ? "Logging in..." : "Login"}
           </button>
         </form>
 

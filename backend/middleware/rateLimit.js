@@ -2,7 +2,7 @@ import rateLimit from "express-rate-limit";
 
 export const loginLimiter = rateLimit({
   windowMs: 5 * 60 * 1000, // 5 minute
-  max: 5,
+  max: 7,
   message: {
     error: "Too many login attempts. Try again later."
   },
@@ -59,7 +59,7 @@ export const createGroupLimiter = rateLimit({
 });
 
 export const createGameLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, 
+  windowMs: 60 * 60 * 1000,
   max: 10,
   message: {
     error: "Too many games created from this IP. Please try again after an hour."
@@ -69,7 +69,7 @@ export const createGameLimiter = rateLimit({
 });
 
 export const createTicketLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, 
+  windowMs: 60 * 60 * 1000,
   max: 20,
   message: {
     error: "Too many tickets/requests created from this IP. Please try again after an hour."
