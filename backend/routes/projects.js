@@ -12,14 +12,28 @@ import { gameCreateValidation } from "../middleware/validation.js";
 
 const router = express.Router();
 
-// Multer setup for consent forms
 const storage = multer.diskStorage({
     destination: "./uploads/consent_forms",
     filename: (req, file, cb) => {
-        cb(null, `${Date.now()}-${file.originalname}`);
+        // Create a safe filename (no spaces or weird characters)
+        const safeName = file.originalname.replace(/[^a-zA-Z0-9.\-_]/g, "");
+        cb(null, `${Date.now()}-${safeName}`);
     }
 });
-const upload = multer({ storage });
+
+// File upload security: enforce size limits and strict mimetypes
+const upload = multer({ 
+    storage,
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+    fileFilter: (req, file, cb) => {
+        // Never trust extension alone; check mimetype
+        if (file.mimetype === "application/pdf") {
+            cb(null, true);
+        } else {
+            cb(new Error("Invalid file type. Only PDF files are allowed for consent and IRB forms."), false);
+        }
+    }
+});
 
 /**
  * GET /projects

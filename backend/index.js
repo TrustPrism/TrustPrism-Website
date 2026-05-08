@@ -85,7 +85,7 @@ io.on("connection", (socket) => {
   });
 });
 
-app.use(express.json());
+app.use(express.json({ limit: "50kb" })); // explicit payload limit to prevent giant payload attacks
 app.use(cookieParser());
 
 // Security Middlewares
