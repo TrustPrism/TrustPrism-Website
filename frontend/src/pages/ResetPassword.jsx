@@ -33,7 +33,7 @@ export default function ResetPassword() {
         const data = await res.json();
         setMessage(data.error || "Reset failed. Link may be expired.");
       }
-    } catch (err) {
+    } catch {
       setMessage("Network error. Reset failed.");
     }
   };
