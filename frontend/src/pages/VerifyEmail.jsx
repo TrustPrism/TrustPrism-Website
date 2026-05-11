@@ -35,7 +35,7 @@ export default function VerifyEmail() {
             setMessage(errorMessage || "Verification failed.");
           }
         }
-      } catch (err) {
+      } catch {
         setStatus("error");
         setMessage("Verification failed due to a network error.");
       }
