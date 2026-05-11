@@ -7,6 +7,8 @@ import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import hpp from "hpp";
 import morgan from "morgan";
+import cron from "node-cron";
+import { exec } from "child_process";
 import { apiLimiter } from "./middleware/rateLimit.js";
 import { csrfProtection } from "./middleware/security.js";
 import { pool } from "./db.js";
@@ -47,14 +49,14 @@ const app = express();
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:5175", "http://localhost:5174", "http://localhost:3000"], // Explicitly allow frontend origin
+    origin: ["http://localhost:5173", "http://localhost:5175", "http://localhost:5174", "http://localhost:3000"], // Explicitly allow frontend origin
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "x-api-key", "X-Requested-With", "X-TrustPrism-CSRF"],
     credentials: true
   }
 });
 app.use(cors({
-  origin: ["http://localhost:5175", "http://localhost:5174", "http://localhost:3000"],
+  origin: ["http://localhost:5173", "http://localhost:5175", "http://localhost:5174", "http://localhost:3000"],
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "x-api-key", "X-Requested-With", "X-TrustPrism-CSRF"],
   credentials: true
@@ -178,6 +180,21 @@ app.use((req, res) => {
   console.log("\u26a0\ufe0f UNMATCHED ROUTE:", req.method, req.url);
   res.status(404).json({ error: "Route not found" });
 });
+// Automated Backups via node-cron (Runs daily at 2:00 AM)
+cron.schedule("0 2 * * *", () => {
+  console.log("⏰ Running scheduled database backup...");
+  exec("bash ./scripts/backup_db.sh", { cwd: __dirname }, (error, stdout, stderr) => {
+    if (error) {
+      console.error("❌ Scheduled backup failed:", error.message);
+      return;
+    }
+    if (stderr) {
+      console.error("⚠️ Backup stderr:", stderr);
+    }
+    console.log("✅ Scheduled backup completed:", stdout);
+  });
+});
+
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`Backend running on port ${PORT} on 0.0.0.0`);

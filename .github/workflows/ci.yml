@@ -1,0 +1,84 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main", "staging", "dev" ]
+  pull_request:
+    branches: [ "main", "staging", "dev" ]
+
+jobs:
+  lint-test-build:
+    name: Lint, Test, and Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Frontend Dependencies
+        working-directory: ./frontend
+        run: npm ci || npm install
+
+      - name: Lint Frontend
+        working-directory: ./frontend
+        run: npm run lint --if-present
+
+      - name: Test Frontend
+        working-directory: ./frontend
+        run: npm run test --if-present
+
+      - name: Build Frontend
+        working-directory: ./frontend
+        run: npm run build
+
+      - name: Install Backend Dependencies
+        working-directory: ./backend
+        run: npm ci || npm install
+
+      - name: Lint Backend
+        working-directory: ./backend
+        run: npm run lint --if-present
+
+      - name: Test Backend
+        working-directory: ./backend
+        run: npm run test --if-present
+
+  deploy-development:
+    name: Deploy to Development
+    needs: lint-test-build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/dev'
+    environment: development
+    steps:
+      - name: Deploy
+        run: |
+          echo "Deploying to Development Environment"
+          # Add actual deployment commands here
+
+  deploy-staging:
+    name: Deploy to Staging
+    needs: lint-test-build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/staging'
+    environment: staging
+    steps:
+      - name: Deploy
+        run: |
+          echo "Deploying to Staging Environment"
+          # Add actual deployment commands here
+
+  deploy-production:
+    name: Deploy to Production
+    needs: lint-test-build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    environment: production
+    steps:
+      - name: Deploy
+        run: |
+          echo "Deploying to Production Environment"
+          # Add actual deployment commands here
