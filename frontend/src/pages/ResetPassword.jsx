@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useSearchParams, useNavigate, Link } from "react-router-dom";
-import axios from "axios";
+
 import logo from "../assets/logo-removebg-preview.png";
 import "./ResetPassword.css";
 
@@ -20,14 +20,21 @@ export default function ResetPassword() {
     }
 
     try {
-      await axios.post("http://localhost:5000/auth/reset-password", {
-        token,
-        newPassword: password,
+      const res = await fetch("http://localhost:5000/auth/reset-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token, newPassword: password }),
       });
-      setMessage("Password reset successful! Redirecting to login...");
-      setTimeout(() => navigate("/login"), 3000);
+
+      if (res.ok) {
+        setMessage("Password reset successful! Redirecting to login...");
+        setTimeout(() => navigate("/login"), 3000);
+      } else {
+        const data = await res.json();
+        setMessage(data.error || "Reset failed. Link may be expired.");
+      }
     } catch (err) {
-      setMessage(err.response?.data?.error || "Reset failed. Link may be expired.");
+      setMessage("Network error. Reset failed.");
     }
   };
 
