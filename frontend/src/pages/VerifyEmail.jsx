@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useSearchParams, Link } from "react-router-dom";
-import axios from "axios";
+
 import logo from "../assets/logo-removebg-preview.png";
 import "./VerifyEmail.css";
 
@@ -17,24 +17,28 @@ export default function VerifyEmail() {
     const verify = async () => {
       const token = searchParams.get("token");
       try {
-        const response = await axios.get(
-          `http://localhost:5000/auth/verify-email?token=${token}`
-        );
-        setStatus("success");
-        setMessage(response.data.message);
-      } catch (err) {
-        const errorMessage = err.response?.data?.error || "";
-        
-        // If the error contains "already used", assume the update worked on a previous attempt
-        if (errorMessage.toLowerCase().includes("already used") || 
-            errorMessage.toLowerCase().includes("already verified")) {
+        const response = await fetch(`http://localhost:5000/auth/verify-email?token=${token}`);
+        if (response.ok) {
+          const data = await response.json();
           setStatus("success");
-          setMessage("Email verified! You can now log in.");
+          setMessage(data.message);
         } else {
-          setStatus("error");
-          setMessage(errorMessage || "Verification failed.");
+          const data = await response.json();
+          const errorMessage = data.error || "";
+          
+          if (errorMessage.toLowerCase().includes("already used") || 
+              errorMessage.toLowerCase().includes("already verified")) {
+            setStatus("success");
+            setMessage("Email verified! You can now log in.");
+          } else {
+            setStatus("error");
+            setMessage(errorMessage || "Verification failed.");
+          }
         }
-}
+      } catch (err) {
+        setStatus("error");
+        setMessage("Verification failed due to a network error.");
+      }
     };
     verify();
   }, [searchParams]);

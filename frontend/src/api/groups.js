@@ -1,9 +1,7 @@
-import axios from "axios";
-
 export async function getMyGroups() {
    // assuming JWT auth
-  const res = await axios.get("http://localhost:5000/groups/my-groups", {
-    withCredentials: true,
+  const res = await fetch("http://localhost:5000/groups/my-groups", {
+    credentials: "include",
   });
-  return res.data;
+  return res.json();
 }

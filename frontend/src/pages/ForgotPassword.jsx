@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+
 import { Link } from "react-router-dom";
 import logo from "../assets/logo-removebg-preview.png";
 import "./ForgotPassword.css";
@@ -14,7 +14,11 @@ export default function ForgotPassword() {
     setMessage("");
     setError("");
     try {
-      await axios.post("http://localhost:5000/auth/forgot-password", { email });
+      const res = await fetch("http://localhost:5000/auth/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email })
+      });
       setMessage("If an account exists with that email, a reset link has been sent.");
     } catch (err) {
       console.error("Forgot password error:", err);
