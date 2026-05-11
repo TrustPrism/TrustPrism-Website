@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 const API = "http://localhost:5000";
 
@@ -15,18 +15,12 @@ export default function DashboardView({
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOrder, setSortOrder] = useState("latest");
-  const [selectedGame, setSelectedGame] = useState(null);
+
   const [consentGame, setConsentGame] = useState(null);
   const [consentAgreed, setConsentAgreed] = useState(false);
   const [consentedGameIds, setConsentedGameIds] = useState(new Set());
 
-  useEffect(() => {
-    if (!userId) return;
-    fetchGames();
-    fetchConsents();
-  }, [userId, sortOrder]);
-
-  const fetchGames = async () => {
+  const fetchGames = useCallback(async () => {
     setLoading(true);
     try {
       const params = new URLSearchParams({ sort: sortOrder });
@@ -42,9 +36,9 @@ export default function DashboardView({
     } finally {
       setLoading(false);
     }
-  };
+  }, [sortOrder, searchTerm]);
 
-  const fetchConsents = async () => {
+  const fetchConsents = useCallback(async () => {
     try {
       const res = await fetch(`${API}/participant/consents`, {
       credentials: "include",
@@ -57,7 +51,13 @@ export default function DashboardView({
     } catch (err) {
       console.error("Failed to fetch consents:", err);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (!userId) return;
+    fetchGames();
+    fetchConsents();
+  }, [userId, fetchGames, fetchConsents]);
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
@@ -96,7 +96,8 @@ export default function DashboardView({
         const url = new URL(game.production_url);
         url.searchParams.set("participantId", userId);
         window.open(url.toString(), "_blank", "noopener,noreferrer");
-      } catch (e) {
+      } catch (err) {
+        console.error(err);
         window.open(`${game.production_url}?participantId=${userId}`, "_blank", "noopener,noreferrer");
       }
     } else {

@@ -5,7 +5,7 @@ import "./RGroups.css";
 export default function RGroups({ onViewProject }) {
   const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery] = useState("");
   const [selectedGroup, setSelectedGroup] = useState(null);
 
   useEffect(() => {
@@ -114,7 +114,7 @@ export default function RGroups({ onViewProject }) {
         {filteredGroups.map((g) => {
           // Mocking member count for visual fidelity if not present
           const memberCount = 0
-          const displayCount = memberCount > 15 ? 15 : memberCount; // max for avatars logic maybe?
+
 
           return (
             <div key={g.id} className="rg-card" onClick={() => setSelectedGroup(g)}>

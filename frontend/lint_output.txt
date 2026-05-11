@@ -1,0 +1,297 @@
+
+> frontend@0.0.0 lint
+> eslint .
+
+
+/home/tanvia/TrustPrism/frontend/src/components/Notifications.jsx
+  19:36  error  Error: Cannot call impure function during render
+
+`Date.now` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+  17 |
+  18 |     // Update time for "time ago" dynamically
+> 19 |     const [now, setNow] = useState(Date.now());
+     |                                    ^^^^^^^^^^ Cannot call impure function
+  20 |     
+  21 |     useEffect(() => {
+  22 |         const timer = setInterval(() => setNow(Date.now()), 60000);  react-hooks/purity
+
+/home/tanvia/TrustPrism/frontend/src/components/ProjectModal.jsx
+  26:26  error  'useCallback' is not defined                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 no-undef
+  26:38  error  Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `project`, but the source dependencies were [project?.id]. Inferred less specific property than source.
+
+  24 |     const { auth: currentUser } = useContext(AuthContext);
+  25 |
+> 26 |     const fetchTickets = useCallback(async () => {
+     |                                      ^^^^^^^^^^^^^
+> 27 |         try {
+     | ^^^^^^^^^^^^^
+> 28 |             const res = await fetch(`${API}/api/tickets?game_id=${project.id}`, {
+     | ^^^^^^^^^^^^^
+> 29 |       credentials: "include",
+     | ^^^^^^^^^^^^^
+> 30 |                 headers: {}
+     | ^^^^^^^^^^^^^
+> 31 |             });
+     | ^^^^^^^^^^^^^
+> 32 |             if (res.ok) setTickets(await res.json());
+     | ^^^^^^^^^^^^^
+> 33 |         } catch (e) { console.error(e); }
+     | ^^^^^^^^^^^^^
+> 34 |     }, [project?.id]);
+     | ^^^^^^ Could not preserve existing manual memoization
+  35 |
+  36 |     useEffect(() => {
+  37 |         if (project) fetchTickets();  react-hooks/preserve-manual-memoization
+  37:22  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  35 |
+  36 |     useEffect(() => {
+> 37 |         if (project) fetchTickets();
+     |                      ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  38 |     }, [project, fetchTickets]);
+  39 |
+  40 |     if (!project) return null;                                                                                                                                                                                                                                                                                                                                                          react-hooks/set-state-in-effect
+
+/home/tanvia/TrustPrism/frontend/src/components/tickets/TicketDetail.jsx
+  10:25  error  'useCallback' is not defined                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            no-undef
+  25:23  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  23 |     
+  24 |     useEffect(() => {
+> 25 |         if (ticketId) fetchTicket();
+     |                       ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  26 |     }, [ticketId, fetchTicket]);
+  27 |
+  28 |     async function updateStatus(newStatus) {  react-hooks/set-state-in-effect
+
+/home/tanvia/TrustPrism/frontend/src/components/tickets/TicketList.jsx
+  17:26  error  'useCallback' is not defined                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  no-undef
+  37:9   error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  35 |
+  36 |     useEffect(() => {
+> 37 |         fetchTickets();
+     |         ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  38 |
+  39 |         // Connect socket for live ticket status updates if user is authenticated
+  40 |         const userId = auth?.id;  react-hooks/set-state-in-effect
+
+/home/tanvia/TrustPrism/frontend/src/pages/views/ChangeControl.jsx
+  43:23  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  41 |     }, []);
+  42 |
+> 43 |     useEffect(() => { fetchCCRs(); }, [fetchCCRs]);
+     |                       ^^^^^^^^^ Avoid calling setState() directly within an effect
+  44 |
+  45 |     useEffect(() => {
+  46 |         fetch(`${API}/admin/system-time`, { credentials: "include" })  react-hooks/set-state-in-effect
+  91:18  error  'e' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       no-unused-vars
+
+/home/tanvia/TrustPrism/frontend/src/pages/views/DashboardView.jsx
+  18:10  error    'selectedGame' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                   no-unused-vars
+  18:24  error    'setSelectedGame' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                no-unused-vars
+  27:6   warning  React Hook useEffect has a missing dependency: 'fetchGames'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  99:16  error    'e' is defined but never used                                                                                  no-unused-vars
+
+/home/tanvia/TrustPrism/frontend/src/pages/views/GameDetailModal.jsx
+   24:19  error    'currentUser' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          no-unused-vars
+   27:9   error    Error: Cannot access variable before it is declared
+
+`fetchApiKeys` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  25 |
+  26 |     useEffect(() => {
+> 27 |         fetchApiKeys();
+     |         ^^^^^^^^^^^^ `fetchApiKeys` accessed before it is declared
+  28 |         fetchTickets();
+  29 |     }, [game.id]);
+  30 |
+
+  63 |     };
+  64 |
+> 65 |     const fetchApiKeys = async () => {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 66 |         try {
+     | ^^^^^^^^^^^^^
+> 67 |             const res = await fetch(`http://localhost:5000/admin/games/${game.id}/api-keys`, {
+     | ^^^^^^^^^^^^^
+> 68 |       credentials: "include",
+     | ^^^^^^^^^^^^^
+> 69 |                 headers: {}
+     | ^^^^^^^^^^^^^
+> 70 |             });
+     | ^^^^^^^^^^^^^
+> 71 |             if (res.ok) setApiKeys(await res.json());
+     | ^^^^^^^^^^^^^
+> 72 |         } catch (err) { console.error(err); }
+     | ^^^^^^^^^^^^^
+> 73 |     };
+     | ^^^^^^^ `fetchApiKeys` is declared here
+  74 |
+  75 |     const generateApiKey = async () => {
+  76 |         setGeneratingKey(true);  react-hooks/immutability
+   28:9   error    Error: Cannot access variable before it is declared
+
+`fetchTickets` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  26 |     useEffect(() => {
+  27 |         fetchApiKeys();
+> 28 |         fetchTickets();
+     |         ^^^^^^^^^^^^ `fetchTickets` accessed before it is declared
+  29 |     }, [game.id]);
+  30 |
+  31 |     async function fetchTickets() {
+
+  29 |     }, [game.id]);
+  30 |
+> 31 |     async function fetchTickets() {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 32 |         try {
+     | ^^^^^^^^^^^^^
+> 33 |             const res = await fetch(`${API}/api/tickets?game_id=${game.id}`, {
+     | ^^^^^^^^^^^^^
+> 34 |       credentials: "include",
+     | ^^^^^^^^^^^^^
+> 35 |                 headers: {}
+     | ^^^^^^^^^^^^^
+> 36 |             });
+     | ^^^^^^^^^^^^^
+> 37 |             if (res.ok) setTickets(await res.json());
+     | ^^^^^^^^^^^^^
+> 38 |         } catch (err) { console.error(err); }
+     | ^^^^^^^^^^^^^
+> 39 |     }
+     | ^^^^^^ `fetchTickets` is declared here
+  40 |
+  41 |
+  42 |                                                   react-hooks/immutability
+   29:8   warning  React Hook useEffect has missing dependencies: 'fetchApiKeys' and 'fetchTickets'. Either include them or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 react-hooks/exhaustive-deps
+  111:17  error    Error: This value cannot be modified
+
+Modifying component props or hook arguments is not allowed. Consider using a local variable instead.
+
+  109 |             });
+  110 |             if (res.ok) {
+> 111 |                 game.staging_url = stagingUrl.trim();
+      |                 ^^^^ `game` cannot be modified
+  112 |             }
+  113 |         } catch (err) { console.error(err); }
+  114 |         setSavingStagingUrl(false);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   react-hooks/immutability
+
+/home/tanvia/TrustPrism/frontend/src/pages/views/RDashboard.jsx
+  5:53  error  'onViewInsights' is defined but never used  no-unused-vars
+
+/home/tanvia/TrustPrism/frontend/src/pages/views/RGroups.jsx
+    8:23  error  'setSearchQuery' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  117:17  error  'displayCount' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u    no-unused-vars
+
+/home/tanvia/TrustPrism/frontend/src/pages/views/RProjectDetails.jsx
+   9:21  error    'setLoading' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         no-unused-vars
+  19:9   error    Error: Cannot access variable before it is declared
+
+`fetchProject` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  17 |
+  18 |     useEffect(() => {
+> 19 |         fetchProject();
+     |         ^^^^^^^^^^^^ `fetchProject` accessed before it is declared
+  20 |         fetchTickets();
+  21 |     }, [projectId]);
+  22 |
+
+  31 |     }
+  32 |
+> 33 |     async function fetchProject() {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 34 |         try {
+     | ^^^^^^^^^^^^^
+> 35 |                         const res = await fetch(`http://localhost:5000/projects/${projectId}`, {
+     …
+     | ^^^^^^^^^^^^^
+> 44 |         } catch (e) { console.error(e); }
+     | ^^^^^^^^^^^^^
+> 45 |     }
+     | ^^^^^^ `fetchProject` is declared here
+  46 |
+  47 |
+  48 |                                                                                                                                                                                                                                                                                                                                                           react-hooks/immutability
+  20:9   error    Error: Cannot access variable before it is declared
+
+`fetchTickets` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  18 |     useEffect(() => {
+  19 |         fetchProject();
+> 20 |         fetchTickets();
+     |         ^^^^^^^^^^^^ `fetchTickets` accessed before it is declared
+  21 |     }, [projectId]);
+  22 |
+  23 |     async function fetchTickets() {
+
+  21 |     }, [projectId]);
+  22 |
+> 23 |     async function fetchTickets() {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 24 |         try {
+     | ^^^^^^^^^^^^^
+> 25 |                         const res = await fetch(`http://localhost:5000/api/tickets?game_id=${projectId}`, {
+     | ^^^^^^^^^^^^^
+> 26 |       credentials: "include",
+     | ^^^^^^^^^^^^^
+> 27 |                 headers: {}
+     | ^^^^^^^^^^^^^
+> 28 |             });
+     | ^^^^^^^^^^^^^
+> 29 |             if (res.ok) setTickets(await res.json());
+     | ^^^^^^^^^^^^^
+> 30 |         } catch (e) { console.error(e); }
+     | ^^^^^^^^^^^^^
+> 31 |     }
+     | ^^^^^^ `fetchTickets` is declared here
+  32 |
+  33 |     async function fetchProject() {
+  34 |         try {  react-hooks/immutability
+  21:8   warning  React Hook useEffect has missing dependencies: 'fetchProject' and 'fetchTickets'. Either include them or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               react-hooks/exhaustive-deps
+
+/home/tanvia/TrustPrism/frontend/src/pages/views/RSettings.jsx
+  57:26  error  'type' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+/home/tanvia/TrustPrism/frontend/src/pages/views/SecuritySettings.jsx
+  60:18  error  'err' is defined but never used  no-unused-vars
+  81:18  error  'err' is defined but never used  no-unused-vars
+
+/home/tanvia/TrustPrism/frontend/src/pages/views/Study_Approvals.jsx
+  24:8  warning  React Hook useEffect has a missing dependency: 'onGameOpened'. Either include it or remove the dependency array. If 'onGameOpened' changes too often, find the parent component that defines it and wrap that definition in useCallback  react-hooks/exhaustive-deps
+
+/home/tanvia/TrustPrism/frontend/src/pages/views/User_Management.jsx
+  239:50  error  'err' is defined but never used  no-unused-vars
+
+✖ 31 problems (27 errors, 4 warnings)
+

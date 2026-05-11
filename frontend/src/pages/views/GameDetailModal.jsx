@@ -1,5 +1,5 @@
-import { useState, useEffect, useContext } from "react";
-import AuthContext from "../../context/AuthContext";
+import { useState, useEffect, useCallback } from "react";
+
 import TicketCreate from "../../components/tickets/TicketCreate";
 import TicketDetail from "../../components/tickets/TicketDetail";
 import "../../components/tickets/Tickets.css";
@@ -21,14 +21,7 @@ const GameDetailModal = ({ game, onClose }) => {
     const [showCreateTicket, setShowCreateTicket] = useState(false);
     const [selectedTicketId, setSelectedTicketId] = useState(null);
     
-    const { auth: currentUser } = useContext(AuthContext);
-
-    useEffect(() => {
-        fetchApiKeys();
-        fetchTickets();
-    }, [game.id]);
-
-    async function fetchTickets() {
+    const fetchTickets = useCallback(async () => {
         try {
             const res = await fetch(`${API}/api/tickets?game_id=${game.id}`, {
       credentials: "include",
@@ -36,7 +29,24 @@ const GameDetailModal = ({ game, onClose }) => {
             });
             if (res.ok) setTickets(await res.json());
         } catch (err) { console.error(err); }
-    }
+    }, [game.id]);
+
+    const fetchApiKeys = useCallback(async () => {
+        try {
+            const res = await fetch(`http://localhost:5000/admin/games/${game.id}/api-keys`, {
+      credentials: "include",
+                headers: {}
+            });
+            if (res.ok) setApiKeys(await res.json());
+        } catch (err) { console.error(err); }
+    }, [game.id]);
+
+
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        fetchApiKeys();
+        fetchTickets();
+    }, [fetchApiKeys, fetchTickets]);
 
 
 
@@ -62,15 +72,7 @@ const GameDetailModal = ({ game, onClose }) => {
         }
     };
 
-    const fetchApiKeys = async () => {
-        try {
-            const res = await fetch(`http://localhost:5000/admin/games/${game.id}/api-keys`, {
-      credentials: "include",
-                headers: {}
-            });
-            if (res.ok) setApiKeys(await res.json());
-        } catch (err) { console.error(err); }
-    };
+
 
     const generateApiKey = async () => {
         setGeneratingKey(true);
@@ -108,7 +110,7 @@ const GameDetailModal = ({ game, onClose }) => {
                 body: JSON.stringify({ staging_url: stagingUrl.trim() })
             });
             if (res.ok) {
-                game.staging_url = stagingUrl.trim();
+                // Staging URL saved
             }
         } catch (err) { console.error(err); }
         setSavingStagingUrl(false);

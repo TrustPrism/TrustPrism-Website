@@ -19,7 +19,7 @@ const WARNING_MINUTES = 2; // show countdown in last N minutes
  * Mount once at the top of the authenticated layout (App.jsx).
  */
 export default function SessionLock({ timeoutMinutes = DEFAULT_TIMEOUT_MINUTES }) {
-    const { auth, setAuth, logout } = useContext(AuthContext);
+    const { auth, logout } = useContext(AuthContext);
     const [locked, setLocked] = useState(false);
     const [secondsLeft, setSecondsLeft] = useState(0);
     const [password, setPassword] = useState("");
@@ -63,7 +63,7 @@ export default function SessionLock({ timeoutMinutes = DEFAULT_TIMEOUT_MINUTES }
         if (!auth?.isAuthenticated) return;
         const events = ["mousemove", "mousedown", "keydown", "scroll", "touchstart", "click"];
         events.forEach(e => window.addEventListener(e, resetTimer, { passive: true }));
-        resetTimer();
+        setTimeout(resetTimer, 0);
         return () => {
             events.forEach(e => window.removeEventListener(e, resetTimer));
             clearTimeout(idleTimer.current);
@@ -73,7 +73,7 @@ export default function SessionLock({ timeoutMinutes = DEFAULT_TIMEOUT_MINUTES }
 
     // Listen for SESSION_INVALIDATED dispatched by API calls globally
     useEffect(() => {
-        const handler = (e) => {
+        const handler = () => {
             setForcedLock(true);
             setLocked(true);
         };

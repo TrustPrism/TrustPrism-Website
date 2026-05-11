@@ -19,7 +19,7 @@ export default function User() {
     availableGames: 0,
   });
   const [showFilter, setShowFilter] = useState(false);
-  const [sortOrder, setSortOrder] = useState("latest");
+
 
 
   useEffect(() => {
@@ -60,11 +60,9 @@ export default function User() {
             showFilter={showFilter}
             onToggleFilter={() => setShowFilter((p) => !p)}
             onSortLatest={() => {
-              setSortOrder("latest");
               setShowFilter(false);
             }}
             onSortOldest={() => {
-              setSortOrder("oldest");
               setShowFilter(false);
             }}
             onOpenSettings={() => setActiveView("profile")}

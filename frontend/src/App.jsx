@@ -54,7 +54,7 @@ export default function App() {
           if (body.code === "SESSION_INVALIDATED") {
             window.dispatchEvent(new CustomEvent("session:invalidated", { detail: body }));
           }
-        } catch (_) {}
+        } catch (err) { console.error("Session check error", err); }
       }
       return response;
     };

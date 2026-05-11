@@ -54,7 +54,7 @@ export default function RSettings() {
   }
 
   const handleProfileChange = (e) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value, checked } = e.target;
 
     if (name.startsWith("notify_")) {
       const prefKey = name.replace("notify_", "");

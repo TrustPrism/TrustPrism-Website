@@ -32,7 +32,7 @@ export default function TicketCreate({ onClose, onCreated, prefilledGameId }) {
             }
         }
         if (!prefilledGameId) fetchGames();
-    }, []);
+    }, [prefilledGameId]);
 
     async function handleSubmit(e) {
         e.preventDefault();

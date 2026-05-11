@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useCallback } from "react";
 import AuthContext from "../context/AuthContext";
 import TicketCreate from "./tickets/TicketCreate";
 import TicketDetail from "./tickets/TicketDetail";
@@ -7,7 +7,7 @@ import "../pages/Admin.css";
 
 const API = "http://localhost:5000";
 
-export default function ProjectModal({ project, onClose, onViewInsights }) {
+export default function ProjectModal({ project, onClose }) {
     const [activeTab, setActiveTab] = useState("overview");
     const [stagingUrl, setStagingUrl] = useState(project?.staging_url || "");
     const [savingStagingUrl, setSavingStagingUrl] = useState(false);
@@ -23,11 +23,7 @@ export default function ProjectModal({ project, onClose, onViewInsights }) {
     
     const { auth: currentUser } = useContext(AuthContext);
 
-    useEffect(() => {
-        if (project) fetchTickets();
-    }, [project]);
-
-    async function fetchTickets() {
+    const fetchTickets = useCallback(async () => {
         try {
             const res = await fetch(`${API}/api/tickets?game_id=${project.id}`, {
       credentials: "include",
@@ -35,7 +31,12 @@ export default function ProjectModal({ project, onClose, onViewInsights }) {
             });
             if (res.ok) setTickets(await res.json());
         } catch (e) { console.error(e); }
-    }
+    }, [project]);
+
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        if (project) fetchTickets();
+    }, [project, fetchTickets]);
 
     if (!project) return null;
 
@@ -55,7 +56,7 @@ export default function ProjectModal({ project, onClose, onViewInsights }) {
                 body: JSON.stringify({ staging_url: stagingUrl.trim() })
             });
             if (res.ok) {
-                project.staging_url = stagingUrl.trim();
+                // Staging URL effectively saved
             }
         } catch (err) { console.error(err); }
         setSavingStagingUrl(false);

@@ -57,7 +57,7 @@ export default function SecuritySettings() {
             if (!res.ok) throw new Error("Failed to save");
             setSaved(true);
             setTimeout(() => setSaved(false), 3000);
-        } catch (err) {
+        } catch {
             setError("Failed to save settings to the server.");
         }
         setSaving(false);
@@ -78,7 +78,7 @@ export default function SecuritySettings() {
                 setSaved(true);
                 setTimeout(() => setSaved(false), 3000);
             }
-        } catch (err) {
+        } catch {
             setError("Failed to reset settings.");
         }
         setSaving(false);

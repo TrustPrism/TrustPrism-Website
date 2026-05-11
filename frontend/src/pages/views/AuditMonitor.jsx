@@ -70,17 +70,7 @@ export default function AuditMonitor() {
         setDisablingId(null);
     };
 
-    const handleRevokeKey = async (keyId) => {
-        if (!confirm("Revoke this API key?")) return;
-        try {
-            const res = await fetch(`http://localhost:5000/admin/api-keys/${keyId}`, {
-      credentials: "include",
-                method: "DELETE",
-                headers: {}
-            });
-            if (res.ok) { alert("API key revoked."); fetchAudit(); }
-        } catch (err) { console.error(err); }
-    };
+
 
     if (loading) return <div style={{ padding: "2rem", color: "#64748b" }}>Loading audit data...</div>;
 

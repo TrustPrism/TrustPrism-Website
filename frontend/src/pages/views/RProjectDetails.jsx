@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import TicketCreate from "../../components/tickets/TicketCreate";
 import TicketDetail from "../../components/tickets/TicketDetail";
 import "../../components/tickets/Tickets.css";
@@ -15,12 +15,7 @@ export default function RProjectDetails({ projectId, goBack }) {
     const [showCreateTicket, setShowCreateTicket] = useState(false);
     const [selectedTicketId, setSelectedTicketId] = useState(null);
 
-    useEffect(() => {
-        fetchProject();
-        fetchTickets();
-    }, [projectId]);
-
-    async function fetchTickets() {
+    const fetchTickets = useCallback(async () => {
         try {
                         const res = await fetch(`http://localhost:5000/api/tickets?game_id=${projectId}`, {
       credentials: "include",
@@ -28,9 +23,9 @@ export default function RProjectDetails({ projectId, goBack }) {
             });
             if (res.ok) setTickets(await res.json());
         } catch (e) { console.error(e); }
-    }
+    }, [projectId]);
 
-    async function fetchProject() {
+    const fetchProject = useCallback(async () => {
         try {
                         const res = await fetch(`http://localhost:5000/projects/${projectId}`, {
       credentials: "include",
@@ -41,8 +36,13 @@ export default function RProjectDetails({ projectId, goBack }) {
                 setProject(data);
                 setStagingUrl(data.staging_url || "");
             }
-        } catch (e) { console.error(e); }
-    }
+        } catch (e) { console.error(e); } finally { setLoading(false); }
+    }, [projectId]);
+
+    useEffect(() => {
+        fetchProject();
+        fetchTickets();
+    }, [fetchProject, fetchTickets]);
 
 
 

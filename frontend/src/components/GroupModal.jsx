@@ -12,26 +12,24 @@ export default function GroupModal({ group, onClose, onViewProject }) {
 
     useEffect(() => {
         if (!group) return;
+        async function fetchGroupData() {
+            setLoading(true);
+            try {
+                // Parallel fetch
+                const [detailsRes, projectsRes] = await Promise.all([
+                    fetch(`http://localhost:5000/groups/${group.id}`, {
+      credentials: "include", headers: {} }),
+                    fetch(`http://localhost:5000/groups/${group.id}/games`, {
+      credentials: "include", headers: {} })
+                ]);
+
+                if (detailsRes.ok) setDetails(await detailsRes.json());
+                if (projectsRes.ok) setProjects(await projectsRes.json());
+            } catch (e) { console.error(e); }
+            setLoading(false);
+        }
         fetchGroupData();
     }, [group]);
-
-    async function fetchGroupData() {
-        setLoading(true);
-        try {
-            
-            // Parallel fetch
-            const [detailsRes, projectsRes] = await Promise.all([
-                fetch(`http://localhost:5000/groups/${group.id}`, {
-      credentials: "include", headers: {} }),
-                fetch(`http://localhost:5000/groups/${group.id}/games`, {
-      credentials: "include", headers: {} })
-            ]);
-
-            if (detailsRes.ok) setDetails(await detailsRes.json());
-            if (projectsRes.ok) setProjects(await projectsRes.json());
-        } catch (e) { console.error(e); }
-        setLoading(false);
-    }
 
     async function sendInvite() {
         if (!inviteEmail) return;
@@ -50,7 +48,8 @@ export default function GroupModal({ group, onClose, onViewProject }) {
             } else {
                 alert("Failed to send invite");
             }
-        } catch (e) {
+        } catch (err) {
+            console.error(err);
             alert("Network error sending invite");
         }
     }

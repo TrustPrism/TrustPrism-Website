@@ -15,7 +15,26 @@ export default function Notifications({ onOpenProject }) {
     // Decode user id from token
     const userId = auth?.id || null;
 
+    // Update time for "time ago" dynamically
+    const [now, setNow] = useState(null);
+    
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setNow(Date.now());
+        const timer = setInterval(() => setNow(Date.now()), 60000);
+        return () => clearInterval(timer);
+    }, []);
+
+    useEffect(() => {
+        async function fetchNotifications() {
+            try {
+                const res = await fetch("http://localhost:5000/notifications", {
+          credentials: "include",
+                    headers: {}
+                });
+                if (res.ok) setNotifications(await res.json());
+            } catch (e) { console.error(e); }
+        }
         fetchNotifications();
 
         // Connect socket and join user room for real-time notifications
@@ -34,27 +53,6 @@ export default function Notifications({ onOpenProject }) {
     }, [userId]);
 
     // Close dropdown when clicking outside
-    useEffect(() => {
-        function handleClickOutside(e) {
-            if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-                setShowDropdown(false);
-            }
-        }
-        if (showDropdown) {
-            document.addEventListener("mousedown", handleClickOutside);
-        }
-        return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, [showDropdown]);
-
-    async function fetchNotifications() {
-        try {
-            const res = await fetch("http://localhost:5000/notifications", {
-      credentials: "include",
-                headers: {}
-            });
-            if (res.ok) setNotifications(await res.json());
-        } catch (e) { console.error(e); }
-    }
 
     async function markAsRead(id) {
         try {
@@ -100,7 +98,7 @@ export default function Notifications({ onOpenProject }) {
     }
 
     function getTimeAgo(dateStr) {
-        const diff = Date.now() - new Date(dateStr).getTime();
+        const diff = now - new Date(dateStr).getTime();
         const mins = Math.floor(diff / 60000);
         if (mins < 1) return "just now";
         if (mins < 60) return `${mins}m ago`;

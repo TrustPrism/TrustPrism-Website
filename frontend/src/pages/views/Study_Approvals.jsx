@@ -21,7 +21,7 @@ const StudyApprovals = ({ openGameId, onGameOpened }) => {
             }
             onGameOpened?.();
         }
-    }, [openGameId, games]);
+    }, [openGameId, games, onGameOpened]);
 
     const fetchGames = async () => {
         try {

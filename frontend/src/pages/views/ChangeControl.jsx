@@ -40,6 +40,7 @@ export default function ChangeControl() {
         setLoading(false);
     }, []);
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     useEffect(() => { fetchCCRs(); }, [fetchCCRs]);
 
     useEffect(() => {
@@ -88,7 +89,7 @@ export default function ChangeControl() {
             } else {
                 setSubmitStatus({ ok: false, msg: data.error || "Submission failed" });
             }
-        } catch (e) { setSubmitStatus({ ok: false, msg: "Network error" }); }
+        } catch (err) { console.error(err); setSubmitStatus({ ok: false, msg: "Network error" }); }
         setSubmitting(false);
     };
 

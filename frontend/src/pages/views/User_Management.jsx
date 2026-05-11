@@ -236,7 +236,7 @@ const UserManagement = () => {
                                     onChange={(e) => {
                                         try {
                                             setScopes(JSON.parse(e.target.value));
-                                        } catch (err) {
+                                        } catch {
                                             // allow typing
                                         }
                                     }}

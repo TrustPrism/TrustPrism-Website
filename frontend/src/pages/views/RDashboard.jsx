@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Notifications from "../../components/Notifications";
 import "./RDashboard.css";
 
-export default function RDashboard({ setActiveView, onViewInsights, onViewProject }) {
+export default function RDashboard({ setActiveView, onViewProject }) {
   const [stats, setStats] = useState({ projects: [], activity: [] });
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("published");

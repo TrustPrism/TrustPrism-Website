@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import "./Tickets.css";
 
 const API = "http://localhost:5000";
@@ -7,11 +7,7 @@ export default function TicketDetail({ ticketId, onClose, role, onStatusChange }
     const [ticket, setTicket] = useState(null);
     const [loading, setLoading] = useState(true);
     
-    useEffect(() => {
-        if (ticketId) fetchTicket();
-    }, [ticketId]);
-
-    async function fetchTicket() {
+    const fetchTicket = useCallback(async () => {
         setLoading(true);
         try {
             const res = await fetch(`${API}/api/tickets/${ticketId}`, {
@@ -23,7 +19,12 @@ export default function TicketDetail({ ticketId, onClose, role, onStatusChange }
             console.error("Failed to fetch ticket:", err);
         }
         setLoading(false);
-    }
+    }, [ticketId]);
+    
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        if (ticketId) fetchTicket();
+    }, [ticketId, fetchTicket]);
 
     async function updateStatus(newStatus) {
         try {

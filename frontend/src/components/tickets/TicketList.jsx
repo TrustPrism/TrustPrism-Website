@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext, useRef } from "react";
+import { useState, useEffect, useContext, useRef, useCallback } from "react";
 import { io } from "socket.io-client";
 import AuthContext from "../../context/AuthContext";
 import "./Tickets.css";
@@ -12,9 +12,29 @@ export default function TicketList({ onSelectTicket, gameId, role }) {
     const [loading, setLoading] = useState(true);
     const [filterStatus, setFilterStatus] = useState("");
     const [filterPriority, setFilterPriority] = useState("");
-    const [filterGame, setFilterGame] = useState(gameId || "");
+    const [filterGame] = useState(gameId || "");
     
+    const fetchTickets = useCallback(async () => {
+        setLoading(true);
+        try {
+            const params = new URLSearchParams();
+            if (filterStatus) params.set("status", filterStatus);
+            if (filterPriority) params.set("priority", filterPriority);
+            if (filterGame) params.set("game_id", filterGame);
+
+            const res = await fetch(`${API}/api/tickets?${params}`, {
+      credentials: "include",
+                headers: {}
+            });
+            if (res.ok) setTickets(await res.json());
+        } catch (err) {
+            console.error("Failed to fetch tickets:", err);
+        }
+        setLoading(false);
+    }, [filterStatus, filterPriority, filterGame]);
+
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         fetchTickets();
 
         // Connect socket for live ticket status updates if user is authenticated
@@ -40,26 +60,7 @@ export default function TicketList({ onSelectTicket, gameId, role }) {
                 socketRef.current = null;
             }
         };
-    }, [filterStatus, filterPriority, filterGame, auth?.id]);
-
-    async function fetchTickets() {
-        setLoading(true);
-        try {
-            const params = new URLSearchParams();
-            if (filterStatus) params.set("status", filterStatus);
-            if (filterPriority) params.set("priority", filterPriority);
-            if (filterGame) params.set("game_id", filterGame);
-
-            const res = await fetch(`${API}/api/tickets?${params}`, {
-      credentials: "include",
-                headers: {}
-            });
-            if (res.ok) setTickets(await res.json());
-        } catch (err) {
-            console.error("Failed to fetch tickets:", err);
-        }
-        setLoading(false);
-    }
+    }, [auth?.id, fetchTickets]);
 
     function formatDate(dateStr) {
         if (!dateStr) return "—";
