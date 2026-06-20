@@ -14,7 +14,7 @@ export default function RGroups({ onViewProject }) {
 
   async function fetchMyGroups() {
     try {
-            const res = await fetch("http://localhost:5000/groups/my-groups", {
+            const res = await fetch("/groups/my-groups", {
       credentials: "include",
         headers: {}
       });
@@ -35,7 +35,7 @@ export default function RGroups({ onViewProject }) {
     if (!name) return;
 
     try {
-            const res = await fetch("http://localhost:5000/groups", {
+            const res = await fetch("/groups", {
       credentials: "include",
         method: "POST",
         headers: {

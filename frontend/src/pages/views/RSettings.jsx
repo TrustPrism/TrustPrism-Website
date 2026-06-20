@@ -27,9 +27,9 @@ export default function RSettings() {
       // In a real app we might handle partial failures, but for now wrap both
       try {
         const [profileRes, emailsRes] = await Promise.all([
-          fetch("http://localhost:5000/auth/settings/profile", {
+          fetch("/auth/settings/profile", {
       credentials: "include", headers }),
-          fetch("http://localhost:5000/auth/settings/emails", {
+          fetch("/auth/settings/emails", {
       credentials: "include", headers })
         ]);
 
@@ -84,7 +84,7 @@ export default function RSettings() {
         research_interests: profile.research_interests.map(s => s.trim()).filter(Boolean)
       };
 
-      const res = await fetch("http://localhost:5000/auth/settings/profile", {
+      const res = await fetch("/auth/settings/profile", {
       credentials: "include",
         method: "PUT",
         headers: {
@@ -108,7 +108,7 @@ export default function RSettings() {
     e.preventDefault();
     if (!newEmail) return;
     try {
-            const res = await fetch("http://localhost:5000/auth/settings/emails", {
+            const res = await fetch("/auth/settings/emails", {
       credentials: "include",
         method: "POST",
         headers: {

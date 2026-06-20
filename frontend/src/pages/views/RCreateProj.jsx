@@ -53,7 +53,7 @@ export default function RCreateProj({ onSuccess }) {
   useEffect(() => {
     async function fetchGroups() {
       try {
-                const res = await fetch("http://localhost:5000/groups/my-groups", {
+                const res = await fetch("/groups/my-groups", {
       credentials: "include",
           headers: {}
         });
@@ -132,7 +132,7 @@ export default function RCreateProj({ onSuccess }) {
     });
 
     try {
-            const res = await fetch("http://localhost:5000/projects", {
+            const res = await fetch("/projects", {
       credentials: "include",
         method: "POST",
         headers: {},

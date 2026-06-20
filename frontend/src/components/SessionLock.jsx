@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback, useContext } from "react";
 import AuthContext from "../context/AuthContext";
 
-const API = "http://localhost:5000";
+const API = import.meta.env.VITE_API_URL || "";
 const DEFAULT_TIMEOUT_MINUTES = 30;
 const WARNING_MINUTES = 2; // show countdown in last N minutes
 

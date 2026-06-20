@@ -14,7 +14,7 @@ export default function RDataInsights() {
   useEffect(() => {
     async function fetchGames() {
       try {
-                const res = await fetch("http://localhost:5000/projects?status=published", {
+                const res = await fetch("/projects?status=published", {
       credentials: "include",
           headers: {}
         });
@@ -33,9 +33,9 @@ export default function RDataInsights() {
       setLoading(true);
             try {
         const [statsRes, logsRes] = await Promise.all([
-          fetch(`http://localhost:5000/insights/stats?gameId=${selectedGame.id}`, {
+          fetch(`/insights/stats?gameId=${selectedGame.id}`, {
       credentials: "include", headers: {} }),
-          fetch(`http://localhost:5000/insights/logs?gameId=${selectedGame.id}&limit=50`, {
+          fetch(`/insights/logs?gameId=${selectedGame.id}&limit=50`, {
       credentials: "include", headers: {} })
         ]);
 
@@ -53,7 +53,7 @@ export default function RDataInsights() {
   const handleExport = async (format) => {
     if (!selectedGame) return;
     try {
-            const res = await fetch(`http://localhost:5000/insights/${selectedGame.id}/export?format=${format}`, {
+            const res = await fetch(`/insights/${selectedGame.id}/export?format=${format}`, {
       credentials: "include",
         headers: {}
       });

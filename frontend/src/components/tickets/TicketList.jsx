@@ -3,7 +3,7 @@ import { io } from "socket.io-client";
 import AuthContext from "../../context/AuthContext";
 import "./Tickets.css";
 
-const API = "http://localhost:5000";
+const API = import.meta.env.VITE_API_URL || "";
 
 export default function TicketList({ onSelectTicket, gameId, role }) {
     const { auth } = useContext(AuthContext);

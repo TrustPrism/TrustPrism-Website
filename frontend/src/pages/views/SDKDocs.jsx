@@ -147,7 +147,7 @@ export default function SDKDocs() {
 const tp = TrustPrism.init({
   apiKey: "tp_dev_abc123...",
   gameId: "your-game-uuid",
-  baseUrl: "http://localhost:5000",
+  baseUrl: "",
   debug: true
 });
 
@@ -176,7 +176,7 @@ await tp.endSession({ score: 42 });`, 'quickstart')}>
 const tp = TrustPrism.init({
   apiKey: "tp_dev_abc123...",
   gameId: "your-game-uuid",
-  baseUrl: "http://localhost:5000",
+  baseUrl: "",
   debug: true
 });
 
@@ -224,7 +224,7 @@ await tp.endSession({ score: 42 });`}</pre>
                             <tbody>
                                 <tr><td style={tdStyle}><code>apiKey</code></td><td style={tdStyle}>string</td><td style={tdStyle}>✅</td><td style={tdStyle}>Your API key (Admin → Game Detail → Generate Key)</td></tr>
                                 <tr><td style={tdStyle}><code>gameId</code></td><td style={tdStyle}>string</td><td style={tdStyle}>✅</td><td style={tdStyle}>UUID of your registered game</td></tr>
-                                <tr><td style={tdStyle}><code>baseUrl</code></td><td style={tdStyle}>string</td><td style={tdStyle}>—</td><td style={tdStyle}>Backend URL (default: <code>http://localhost:5000</code>)</td></tr>
+                                <tr><td style={tdStyle}><code>baseUrl</code></td><td style={tdStyle}>string</td><td style={tdStyle}>—</td><td style={tdStyle}>Backend URL (default: <code></code>)</td></tr>
                                 <tr><td style={tdStyle}><code>debug</code></td><td style={tdStyle}>boolean</td><td style={tdStyle}>—</td><td style={tdStyle}>Log SDK calls to console (default: <code>false</code>)</td></tr>
                             </tbody>
                         </table>

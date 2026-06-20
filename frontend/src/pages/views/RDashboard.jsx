@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import Notifications from "../../components/Notifications";
 import "./RDashboard.css";
 
+const API_URL = import.meta.env.VITE_API_URL || "";
+
 export default function RDashboard({ setActiveView, onViewProject }) {
   const [stats, setStats] = useState({ projects: [], activity: [] });
   const [loading, setLoading] = useState(true);
@@ -11,7 +13,7 @@ export default function RDashboard({ setActiveView, onViewProject }) {
   useEffect(() => {
     async function fetchStats() {
       try {
-                const res = await fetch("http://localhost:5000/dashboard/stats", {
+                const res = await fetch(`${API_URL}/dashboard/stats`, {
       credentials: "include",
           headers: {}
         });
@@ -63,7 +65,7 @@ export default function RDashboard({ setActiveView, onViewProject }) {
           />
           <Notifications onOpenProject={async (gameId) => {
             try {
-                            const res = await fetch(`http://localhost:5000/dashboard/stats`, {
+                            const res = await fetch(`${API_URL}/dashboard/stats`, {
       credentials: "include",
                 headers: {}
               });

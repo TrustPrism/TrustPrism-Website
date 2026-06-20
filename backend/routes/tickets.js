@@ -129,6 +129,108 @@ router.get("/", requireAuth, async (req, res) => {
     }
 });
 
+// ─────────────────────────────────────────────────────────────────────────────
+// CONFIGURATION CHANGE REQUESTS (CCR) — TACC §3.04 Configuration Management
+// ─────────────────────────────────────────────────────────────────────────────
+
+const VALID_CHANGE_TYPES = [
+    "security_config", "access_rights", "system_config",
+    "game_lifecycle", "account_management", "infrastructure"
+];
+
+const CHANGE_TYPE_LABELS = {
+    security_config:    "Security Configuration",
+    access_rights:      "Access Rights",
+    system_config:      "System Configuration",
+    game_lifecycle:     "Game / Study Lifecycle",
+    account_management: "Account Management",
+    infrastructure:     "Infrastructure",
+};
+
+// ─── POST /api/tickets/change-requests — Submit a CCR ─────────────────────
+router.post("/change-requests", requireAuth, createTicketLimiter, ccrValidation, async (req, res) => {
+    const { title, description, change_type, security_impact, game_id, priority } = req.body;
+    const userId = req.user.id;
+
+    try {
+        const result = await pool.query(
+            `INSERT INTO tickets
+                (title, description, game_id, created_by, priority, category,
+                 is_change_request, change_type, security_impact, approval_status)
+             VALUES ($1, $2, $3, $4, $5, 'other', TRUE, $6, $7, 'pending')
+             RETURNING *`,
+            [title.trim(), description.trim(), game_id || null, userId,
+             priority || "medium", change_type, security_impact.trim()]
+        );
+        const ccr = result.rows[0];
+
+        // Notify all admins
+        const adminsRes = await pool.query("SELECT id FROM users WHERE role = 'admin'");
+        const creatorRes = await pool.query("SELECT first_name, last_name FROM users WHERE id = $1", [userId]);
+        const name = creatorRes.rows[0]
+            ? `${creatorRes.rows[0].first_name} ${creatorRes.rows[0].last_name}` : "A user";
+
+        for (const admin of adminsRes.rows) {
+            await notify(req, admin.id, "system",
+                `${name} submitted a Change Request: "${ccr.title}" [${CHANGE_TYPE_LABELS[change_type]}]`,
+                { ticket_id: ccr.id, change_type }
+            );
+        }
+
+        // TACC §3.04 — SIEM: Category 5/12 — CCR submitted
+        await logSIEMEvent(userId, "CCR_SUBMITTED", req.ip, {
+            ccr_id: ccr.id, title: ccr.title, change_type, game_id: game_id || null
+        });
+
+        res.status(201).json(ccr);
+    } catch (err) {
+        console.error("CCR submit error:", err);
+        res.status(500).json({ error: "Failed to submit change request" });
+    }
+});
+
+// ─── GET /api/tickets/change-requests — List CCRs ─────────────────────────
+router.get("/change-requests", requireAuth, async (req, res) => {
+    const userId = req.user.id;
+    const userRole = req.user.role;
+    const { approval_status, change_type } = req.query;
+
+    try {
+        let query = `
+            SELECT t.*,
+                   g.name                              AS game_name,
+                   u.first_name                        AS creator_first_name,
+                   u.last_name                         AS creator_last_name,
+                   u.email                             AS creator_email,
+                   a.first_name                        AS approver_first_name,
+                   a.last_name                         AS approver_last_name
+            FROM tickets t
+            LEFT JOIN games g ON t.game_id = g.id
+            JOIN users u ON t.created_by = u.id
+            LEFT JOIN users a ON t.approved_by = a.id
+            WHERE t.is_change_request = TRUE
+        `;
+        const params = [];
+        let idx = 1;
+
+        // Non-admins only see their own CCRs
+        if (userRole !== "admin") {
+            query += ` AND t.created_by = $${idx++}`;
+            params.push(userId);
+        }
+        if (approval_status) { query += ` AND t.approval_status = $${idx++}`; params.push(approval_status); }
+        if (change_type)     { query += ` AND t.change_type     = $${idx++}`; params.push(change_type); }
+
+        query += " ORDER BY t.created_at DESC";
+
+        const { rows } = await pool.query(query, params);
+        res.json(rows);
+    } catch (err) {
+        console.error("List CCRs error:", err);
+        res.status(500).json({ error: "Failed to fetch change requests" });
+    }
+});
+
 // ─── GET /:id — Get ticket detail with messages ───
 router.get("/:id", requireAuth, async (req, res) => {
     const { id } = req.params;
@@ -263,108 +365,6 @@ router.patch("/:id/assign", requireAuth, async (req, res) => {
     } catch (err) {
         console.error("Assign ticket error:", err);
         res.status(500).json({ error: "Failed to assign ticket" });
-    }
-});
-
-// ─────────────────────────────────────────────────────────────────────────────
-// CONFIGURATION CHANGE REQUESTS (CCR) — TACC §3.04 Configuration Management
-// ─────────────────────────────────────────────────────────────────────────────
-
-const VALID_CHANGE_TYPES = [
-    "security_config", "access_rights", "system_config",
-    "game_lifecycle", "account_management", "infrastructure"
-];
-
-const CHANGE_TYPE_LABELS = {
-    security_config:    "Security Configuration",
-    access_rights:      "Access Rights",
-    system_config:      "System Configuration",
-    game_lifecycle:     "Game / Study Lifecycle",
-    account_management: "Account Management",
-    infrastructure:     "Infrastructure",
-};
-
-// ─── POST /api/tickets/change-requests — Submit a CCR ─────────────────────
-router.post("/change-requests", requireAuth, createTicketLimiter, ccrValidation, async (req, res) => {
-    const { title, description, change_type, security_impact, game_id, priority } = req.body;
-    const userId = req.user.id;
-
-    try {
-        const result = await pool.query(
-            `INSERT INTO tickets
-                (title, description, game_id, created_by, priority, category,
-                 is_change_request, change_type, security_impact, approval_status)
-             VALUES ($1, $2, $3, $4, $5, 'other', TRUE, $6, $7, 'pending')
-             RETURNING *`,
-            [title.trim(), description.trim(), game_id || null, userId,
-             priority || "medium", change_type, security_impact.trim()]
-        );
-        const ccr = result.rows[0];
-
-        // Notify all admins
-        const adminsRes = await pool.query("SELECT id FROM users WHERE role = 'admin'");
-        const creatorRes = await pool.query("SELECT first_name, last_name FROM users WHERE id = $1", [userId]);
-        const name = creatorRes.rows[0]
-            ? `${creatorRes.rows[0].first_name} ${creatorRes.rows[0].last_name}` : "A user";
-
-        for (const admin of adminsRes.rows) {
-            await notify(req, admin.id, "system",
-                `${name} submitted a Change Request: "${ccr.title}" [${CHANGE_TYPE_LABELS[change_type]}]`,
-                { ticket_id: ccr.id, change_type }
-            );
-        }
-
-        // TACC §3.04 — SIEM: Category 5/12 — CCR submitted
-        await logSIEMEvent(userId, "CCR_SUBMITTED", req.ip, {
-            ccr_id: ccr.id, title: ccr.title, change_type, game_id: game_id || null
-        });
-
-        res.status(201).json(ccr);
-    } catch (err) {
-        console.error("CCR submit error:", err);
-        res.status(500).json({ error: "Failed to submit change request" });
-    }
-});
-
-// ─── GET /api/tickets/change-requests — List CCRs ─────────────────────────
-router.get("/change-requests", requireAuth, async (req, res) => {
-    const userId = req.user.id;
-    const userRole = req.user.role;
-    const { approval_status, change_type } = req.query;
-
-    try {
-        let query = `
-            SELECT t.*,
-                   g.name                              AS game_name,
-                   u.first_name                        AS creator_first_name,
-                   u.last_name                         AS creator_last_name,
-                   u.email                             AS creator_email,
-                   a.first_name                        AS approver_first_name,
-                   a.last_name                         AS approver_last_name
-            FROM tickets t
-            LEFT JOIN games g ON t.game_id = g.id
-            JOIN users u ON t.created_by = u.id
-            LEFT JOIN users a ON t.approved_by = a.id
-            WHERE t.is_change_request = TRUE
-        `;
-        const params = [];
-        let idx = 1;
-
-        // Non-admins only see their own CCRs
-        if (userRole !== "admin") {
-            query += ` AND t.created_by = $${idx++}`;
-            params.push(userId);
-        }
-        if (approval_status) { query += ` AND t.approval_status = $${idx++}`; params.push(approval_status); }
-        if (change_type)     { query += ` AND t.change_type     = $${idx++}`; params.push(change_type); }
-
-        query += " ORDER BY t.created_at DESC";
-
-        const { rows } = await pool.query(query, params);
-        res.json(rows);
-    } catch (err) {
-        console.error("List CCRs error:", err);
-        res.status(500).json({ error: "Failed to fetch change requests" });
     }
 });
 

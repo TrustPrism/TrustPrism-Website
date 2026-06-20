@@ -17,7 +17,7 @@ const UserManagement = () => {
 
     const fetchUsers = async () => {
         try {
-            const res = await fetch("http://localhost:5000/admin/users", {
+            const res = await fetch("/admin/users", {
       credentials: "include",
                 headers: {}
             });
@@ -34,7 +34,7 @@ const UserManagement = () => {
 
     const handleRoleUpdate = async () => {
         try {
-            const res = await fetch(`http://localhost:5000/admin/users/${selectedUser.id}/role`, {
+            const res = await fetch(`/admin/users/${selectedUser.id}/role`, {
       credentials: "include",
                 method: "PUT",
                 headers: {
@@ -57,7 +57,7 @@ const UserManagement = () => {
     const handleStatusUpdate = async (userId, newStatus) => {
         if (!window.confirm(`Are you sure you want to set this user to ${newStatus}?`)) return;
         try {
-            const res = await fetch(`http://localhost:5000/admin/users/${userId}/status`, {
+            const res = await fetch(`/admin/users/${userId}/status`, {
       credentials: "include",
                 method: "PUT",
                 headers: {
@@ -77,7 +77,7 @@ const UserManagement = () => {
 
     const handleScopeUpdate = async () => {
         try {
-            const res = await fetch(`http://localhost:5000/admin/researchers/${selectedUser.id}/scopes`, {
+            const res = await fetch(`/admin/researchers/${selectedUser.id}/scopes`, {
       credentials: "include",
                 method: "PUT",
                 headers: {

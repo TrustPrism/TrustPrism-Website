@@ -4,7 +4,8 @@ export const getAuthRole = () => {
 
 export const logout = async () => {
   try {
-    await fetch("http://localhost:5000/auth/logout", {
+    const API_URL = import.meta.env.VITE_API_URL || "";
+    await fetch(`${API_URL}/auth/logout`, {
       method: "POST",
       credentials: "include",
     });
@@ -18,6 +19,10 @@ export const logout = async () => {
 };
 
 export async function authFetch(url, options = {}) {
+  const API_URL = import.meta.env.VITE_API_URL || "";
+  if (typeof url === "string" && url.startsWith("/") && !url.startsWith("//")) {
+    url = API_URL + url;
+  }
   return fetch(url, {
     ...options,
     credentials: "include",

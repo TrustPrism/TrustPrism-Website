@@ -38,7 +38,7 @@ export default function Researcher() {
     // If it's a string ID (from groups view), fetch the full project object
     if (typeof projectOrId === 'string') {
       try {
-                const res = await fetch(`http://localhost:5000/projects/${projectOrId}`, {
+                const res = await fetch(`/projects/${projectOrId}`, {
       credentials: "include",
           headers: {}
         });

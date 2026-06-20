@@ -3,7 +3,8 @@ import { io } from "socket.io-client";
 import AuthContext from "../context/AuthContext";
 import "./Notifications.css";
 
-const SOCKET_URL = "http://localhost:5000";
+const API_URL = import.meta.env.VITE_API_URL || "";
+const SOCKET_URL = API_URL;
 
 export default function Notifications({ onOpenProject }) {
     const { auth } = useContext(AuthContext);
@@ -28,7 +29,7 @@ export default function Notifications({ onOpenProject }) {
     useEffect(() => {
         async function fetchNotifications() {
             try {
-                const res = await fetch("http://localhost:5000/notifications", {
+                const res = await fetch(`${API_URL}/notifications`, {
           credentials: "include",
                     headers: {}
                 });
@@ -39,7 +40,10 @@ export default function Notifications({ onOpenProject }) {
 
         // Connect socket and join user room for real-time notifications
         if (userId) {
-            socketRef.current = io(SOCKET_URL, { transports: ["websocket", "polling"] });
+            socketRef.current = io(SOCKET_URL, {
+                transports: ["websocket", "polling"],
+                withCredentials: true,
+            });
             socketRef.current.emit("join_user", userId);
 
             socketRef.current.on("notification", (notif) => {
@@ -56,7 +60,7 @@ export default function Notifications({ onOpenProject }) {
 
     async function markAsRead(id) {
         try {
-            await fetch(`http://localhost:5000/notifications/${id}/read`, {
+            await fetch(`${API_URL}/notifications/${id}/read`, {
       credentials: "include",
                 method: "PUT",
                 headers: {}

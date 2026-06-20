@@ -25,7 +25,7 @@ export default function User() {
   useEffect(() => {
     if (!auth.isAuthenticated) return;
 
-    fetch("http://localhost:5000/auth/profile-stats", {
+    fetch("/auth/profile-stats", {
       credentials: "include",
       headers: {
       },

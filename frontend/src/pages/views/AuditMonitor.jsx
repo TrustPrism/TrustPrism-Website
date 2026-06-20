@@ -12,7 +12,7 @@ export default function AuditMonitor() {
     
     const fetchAudit = async () => {
         try {
-            const res = await fetch("http://localhost:5000/admin/audit", {
+            const res = await fetch("/admin/audit", {
       credentials: "include",
                 headers: {}
             });
@@ -31,7 +31,7 @@ export default function AuditMonitor() {
         if (siemFilter.date_from)  params.set("date_from",  siemFilter.date_from);
         if (siemFilter.date_to)    params.set("date_to",    siemFilter.date_to);
         try {
-            const res = await fetch(`http://localhost:5000/admin/siem-logs?${params}`, { credentials: "include" });
+            const res = await fetch(`/admin/siem-logs?${params}`, { credentials: "include" });
             if (res.ok) setSiemData(await res.json());
         } catch (e) { console.error(e); }
         setSiemLoading(false);
@@ -45,7 +45,7 @@ export default function AuditMonitor() {
     const handleFlag = async (logId, flagged, reason) => {
         setFlaggingId(logId);
         try {
-            await fetch(`http://localhost:5000/admin/ai-logs/${logId}/flag`, {
+            await fetch(`/admin/ai-logs/${logId}/flag`, {
       credentials: "include",
                 method: "PUT",
                 headers: { "Content-Type": "application/json",},
@@ -60,7 +60,7 @@ export default function AuditMonitor() {
         if (!confirm(`Disable "${gameName}"? This will also revoke all API keys.`)) return;
         setDisablingId(gameId);
         try {
-            const res = await fetch(`http://localhost:5000/admin/games/${gameId}/disable`, {
+            const res = await fetch(`/admin/games/${gameId}/disable`, {
       credentials: "include",
                 method: "PUT",
                 headers: {}

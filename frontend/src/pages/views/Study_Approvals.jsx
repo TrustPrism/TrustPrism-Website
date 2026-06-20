@@ -25,7 +25,7 @@ const StudyApprovals = ({ openGameId, onGameOpened }) => {
 
     const fetchGames = async () => {
         try {
-                        const res = await fetch("http://localhost:5000/admin/games", {
+                        const res = await fetch("/admin/games", {
       credentials: "include",
                 headers: {}
             });

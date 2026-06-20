@@ -15,7 +15,7 @@ const GroupManagement = () => {
 
     const fetchGroups = async () => {
         try {
-                        const res = await fetch("http://localhost:5000/admin/groups", {
+                        const res = await fetch("/admin/groups", {
       credentials: "include",
                 headers: {}
             });
@@ -33,7 +33,7 @@ const GroupManagement = () => {
         try {
                         // reusing admin users endpoint to filter for researchers manually or we could add a specific endpoint
             // fast approach: fetch all users and filter client side for 'researcher' role
-            const res = await fetch("http://localhost:5000/admin/users", {
+            const res = await fetch("/admin/users", {
       credentials: "include",
                 headers: {}
             });
@@ -50,7 +50,7 @@ const GroupManagement = () => {
         if (!newOwnerId) return alert("Please select a new owner");
 
         try {
-                        const res = await fetch(`http://localhost:5000/admin/groups/${transferModal.id}/transfer`, {
+                        const res = await fetch(`/admin/groups/${transferModal.id}/transfer`, {
       credentials: "include",
                 method: "POST",
                 headers: {

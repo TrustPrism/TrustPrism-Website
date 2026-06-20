@@ -15,7 +15,7 @@ const APPROVAL_META = {
     disapproved: { label: "Disapproved",    color: "#dc2626", bg: "#fef2f2", icon: "cancel" },
 };
 
-const API = "http://localhost:5000";
+const API = import.meta.env.VITE_API_URL || "";
 
 export default function ChangeControl() {
     const [tab, setTab] = useState("pending");

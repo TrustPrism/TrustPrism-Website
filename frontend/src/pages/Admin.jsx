@@ -42,7 +42,7 @@ export default function Admin() {
     };
 
     // 1. Fetch Stats
-    fetch("http://localhost:5000/admin/stats", {
+    fetch("/admin/stats", {
       credentials: "include", headers })
       .then(handleRes)
       .then(data => setStats(data))
@@ -51,7 +51,7 @@ export default function Admin() {
       });
 
     // 2. Fetch Recent Users (re-using users endpoint)
-    fetch("http://localhost:5000/admin/users", {
+    fetch("/admin/users", {
       credentials: "include", headers })
       .then(handleRes)
       .then(users => {
@@ -64,7 +64,7 @@ export default function Admin() {
       });
 
     // 3. Fetch Games
-    fetch("http://localhost:5000/admin/games", {
+    fetch("/admin/games", {
       credentials: "include", headers })
       .then(handleRes)
       .then(data => {
@@ -77,7 +77,7 @@ export default function Admin() {
       });
 
     // 4. Fetch pending CCR count for badge
-    fetch("http://localhost:5000/api/tickets/change-requests?approval_status=pending", {
+    fetch("/api/tickets/change-requests?approval_status=pending", {
       credentials: "include", headers })
       .then(r => r.json())
       .then(data => { if (Array.isArray(data)) setPendingCCRCount(data.length); })

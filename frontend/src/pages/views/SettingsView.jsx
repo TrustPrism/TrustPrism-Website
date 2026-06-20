@@ -1,9 +1,10 @@
 import { useEffect, useState, useContext } from "react";
 import AuthContext from "../../context/AuthContext";
 
+const API_URL = import.meta.env.VITE_API_URL || "";
+
 export default function SettingsView() {
   const { auth } = useContext(AuthContext);
-  const API_URL = "http://localhost:5000";
 
   // State for different sections
   const [profile, setProfile] = useState({ first_name: "", last_name: "" });
@@ -213,7 +214,7 @@ export default function SettingsView() {
                 </div>
                 {consent.consent_form_url && (
                   <a
-                    href={`http://localhost:5000${consent.consent_form_url}`}
+                    href={`${consent.consent_form_url}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="consent-view-link"

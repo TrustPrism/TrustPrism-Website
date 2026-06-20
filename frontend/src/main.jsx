@@ -23,10 +23,16 @@ Sentry.init({
 
 // 2. Analytics (PostHog)
 // Tracks active users, dropoffs, and broken flows.
-posthog.init(import.meta.env.VITE_POSTHOG_KEY || 'dummy-key-for-dev', {
-  api_host: import.meta.env.VITE_POSTHOG_HOST || 'https://app.posthog.com',
-  autocapture: true, // Automatically tracks button clicks and pageviews
-});
+const posthogKey = import.meta.env.VITE_POSTHOG_KEY;
+const posthogHost = import.meta.env.VITE_POSTHOG_HOST || 'https://app.posthog.com';
+if (posthogKey) {
+  posthog.init(posthogKey, {
+    api_host: posthogHost,
+    autocapture: true, // Automatically tracks button clicks and pageviews
+  });
+} else {
+  console.info("PostHog disabled because VITE_POSTHOG_KEY is not set.");
+}
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 import AuthContext from "../../context/AuthContext";
 
-const API = "http://localhost:5000";
+const API = import.meta.env.VITE_API_URL || "";
 
 export default function StudyHistoryView() {
   const { auth } = useContext(AuthContext);

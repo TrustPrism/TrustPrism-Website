@@ -45,18 +45,39 @@ console.log("🔥 INDEX.JS LOADED FROM:", import.meta.url);
 import { createServer } from "http";
 import { Server } from "socket.io";
 
+// Parse CORS origins from environment variable or use defaults
+const getCorsOrigins = () => {
+  if (process.env.CORS_ORIGINS) {
+    return process.env.CORS_ORIGINS.split(",").map(o => o.trim());
+  }
+  // Default to common development origins
+  return [
+    "http://localhost:5173",
+    "http://localhost:5175",
+    "http://localhost:5174",
+    "http://localhost:3000",
+    "http://127.0.0.1:5173",
+    "http://127.0.0.1:5175",
+    "http://127.0.0.1:5174",
+    "http://127.0.0.1:3000"
+  ];
+};
+
+const allowedOrigins = getCorsOrigins();
+console.log("✅ Allowed CORS origins:", allowedOrigins);
+
 const app = express();
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:5173", "http://localhost:5175", "http://localhost:5174", "http://localhost:3000"], // Explicitly allow frontend origin
+    origin: allowedOrigins,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "x-api-key", "X-Requested-With", "X-TrustPrism-CSRF"],
     credentials: true
   }
 });
 app.use(cors({
-  origin: ["http://localhost:5173", "http://localhost:5175", "http://localhost:5174", "http://localhost:3000"],
+  origin: allowedOrigins,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "x-api-key", "X-Requested-With", "X-TrustPrism-CSRF"],
   credentials: true
@@ -95,7 +116,7 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-      "frame-ancestors": ["'self'", "http://localhost:5173", "http://localhost:5174", "http://localhost:5175", "http://localhost:3000"],
+      "frame-ancestors": ["'self'", ...allowedOrigins],
     },
   },
   crossOriginResourcePolicy: { policy: "cross-origin" }

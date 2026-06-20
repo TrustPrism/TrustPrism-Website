@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import "./Tickets.css";
 
-const API = "http://localhost:5000";
+const API = import.meta.env.VITE_API_URL || "";
 
 export default function TicketDetail({ ticketId, onClose, role, onStatusChange }) {
     const [ticket, setTicket] = useState(null);

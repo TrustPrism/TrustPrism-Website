@@ -5,7 +5,7 @@ import TicketDetail from "../../components/tickets/TicketDetail";
 import "../../components/tickets/Tickets.css";
 import "../Admin.css";
 
-const API = "http://localhost:5000";
+const API = import.meta.env.VITE_API_URL || "";
 
 const GameDetailModal = ({ game, onClose }) => {
     const [apiKey, setApiKey] = useState(null);
@@ -33,7 +33,7 @@ const GameDetailModal = ({ game, onClose }) => {
 
     const fetchApiKeys = useCallback(async () => {
         try {
-            const res = await fetch(`http://localhost:5000/admin/games/${game.id}/api-keys`, {
+            const res = await fetch(`/admin/games/${game.id}/api-keys`, {
       credentials: "include",
                 headers: {}
             });
@@ -52,7 +52,7 @@ const GameDetailModal = ({ game, onClose }) => {
 
     const handleMarkPendingReview = async () => {
         try {
-            const res = await fetch(`http://localhost:5000/admin/games/${game.id}/status`, {
+            const res = await fetch(`/admin/games/${game.id}/status`, {
       credentials: "include",
                 method: "PUT",
                 headers: {
@@ -77,7 +77,7 @@ const GameDetailModal = ({ game, onClose }) => {
     const generateApiKey = async () => {
         setGeneratingKey(true);
         try {
-            const res = await fetch(`http://localhost:5000/admin/games/${game.id}/generate-key`, {
+            const res = await fetch(`/admin/games/${game.id}/generate-key`, {
       credentials: "include",
                 method: "POST",
                 headers: {}
@@ -101,7 +101,7 @@ const GameDetailModal = ({ game, onClose }) => {
         if (!stagingUrl.trim()) return;
         setSavingStagingUrl(true);
         try {
-            const res = await fetch(`http://localhost:5000/admin/games/${game.id}/staging-url`, {
+            const res = await fetch(`/admin/games/${game.id}/staging-url`, {
       credentials: "include",
                 method: "PUT",
                 headers: {
@@ -122,7 +122,7 @@ const GameDetailModal = ({ game, onClose }) => {
 
         setPublishing(true);
         try {
-            const res = await fetch(`http://localhost:5000/admin/games/${game.id}/status`, {
+            const res = await fetch(`/admin/games/${game.id}/status`, {
       credentials: "include",
                 method: "PUT",
                 headers: {
@@ -260,11 +260,11 @@ const GameDetailModal = ({ game, onClose }) => {
                         <div className="detail-section">
                             <h4>Consent Form</h4>
                             <iframe
-                                src={`http://localhost:5000${game.consent_form_url}`}
+                                src={`${game.consent_form_url}`}
                                 style={{ width: '100%', height: '400px', border: '1px solid #e2e8f0', borderRadius: '8px', background: '#f8fafc' }}
                                 title="Consent Form PDF"
                             />
-                            <a href={`http://localhost:5000${game.consent_form_url}`} target="_blank" rel="noreferrer" className="consent-link" style={{ marginTop: '8px', display: 'inline-flex' }}>
+                            <a href={`${game.consent_form_url}`} target="_blank" rel="noreferrer" className="consent-link" style={{ marginTop: '8px', display: 'inline-flex' }}>
                                 <span className="material-icons-round">open_in_new</span>
                                 Open in New Tab
                             </a>

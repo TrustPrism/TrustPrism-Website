@@ -29,7 +29,7 @@ export default function SecuritySettings() {
     
     // Load settings from backend on mount
     useEffect(() => {
-        fetch("http://localhost:5000/admin/settings", {
+        fetch("/admin/settings", {
       credentials: "include",
             headers: {}
         })
@@ -48,7 +48,7 @@ export default function SecuritySettings() {
         setSaving(true);
         setError(null);
         try {
-            const res = await fetch("http://localhost:5000/admin/settings", {
+            const res = await fetch("/admin/settings", {
       credentials: "include",
                 method: "PUT",
                 headers: { "Content-Type": "application/json",},
@@ -67,7 +67,7 @@ export default function SecuritySettings() {
         if (!confirm("Reset all settings to defaults? This will update the backend immediately.")) return;
         setSaving(true);
         try {
-            const res = await fetch("http://localhost:5000/admin/settings", {
+            const res = await fetch("/admin/settings", {
       credentials: "include",
                 method: "PUT",
                 headers: { "Content-Type": "application/json",},

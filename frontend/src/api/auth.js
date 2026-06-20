@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000"; // make sure this matches your backend
+const API_URL = import.meta.env.VITE_API_URL || ""; // make sure this matches your backend
 
 // LOGIN
 export async function login({email, password, mfa_token}) {

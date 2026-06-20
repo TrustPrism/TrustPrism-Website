@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-const API = "http://localhost:5000";
+const API = import.meta.env.VITE_API_URL || "";
 
 export default function GamePlayModal({ game, token, onClose }) {
     const [stats, setStats] = useState(null);

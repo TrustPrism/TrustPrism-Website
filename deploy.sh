@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Configuration: Update these variables with your Jetstream2 VM details
-REMOTE_USER="ubuntu"  # Or whatever user you use on Jetstream2
-REMOTE_HOST="your-jetstream2-ip"
+REMOTE_USER="tanvia"  # Or whatever user you use on Jetstream2
+REMOTE_HOST=129.114.102.44
 REMOTE_DIR="~/TrustPrism"
 
 echo "=========================================================="

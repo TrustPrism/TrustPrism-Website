@@ -17,7 +17,7 @@ export default function RProjectDetails({ projectId, goBack }) {
 
     const fetchTickets = useCallback(async () => {
         try {
-                        const res = await fetch(`http://localhost:5000/api/tickets?game_id=${projectId}`, {
+                        const res = await fetch(`/api/tickets?game_id=${projectId}`, {
       credentials: "include",
                 headers: {}
             });
@@ -27,7 +27,7 @@ export default function RProjectDetails({ projectId, goBack }) {
 
     const fetchProject = useCallback(async () => {
         try {
-                        const res = await fetch(`http://localhost:5000/projects/${projectId}`, {
+                        const res = await fetch(`/projects/${projectId}`, {
       credentials: "include",
                 headers: {}
             });
@@ -49,7 +49,7 @@ export default function RProjectDetails({ projectId, goBack }) {
     async function updateStatus(status) {
         if (!confirm(`Are you sure you want to mark this as ${status}?`)) return;
         try {
-                        await fetch(`http://localhost:5000/projects/${projectId}`, {
+                        await fetch(`/projects/${projectId}`, {
       credentials: "include",
                 method: "PUT",
                 headers: {
@@ -67,7 +67,7 @@ export default function RProjectDetails({ projectId, goBack }) {
         if (!stagingUrl.trim()) return;
         setSavingStagingUrl(true);
         try {
-                        const res = await fetch(`http://localhost:5000/projects/${projectId}`, {
+                        const res = await fetch(`/projects/${projectId}`, {
       credentials: "include",
                 method: "PUT",
                 headers: {

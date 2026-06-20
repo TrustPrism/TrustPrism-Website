@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 
-const API = "http://localhost:5000";
+const API = import.meta.env.VITE_API_URL || "";
 
 export default function DashboardView({
   stats,
@@ -371,7 +371,7 @@ export default function DashboardView({
             {/* PDF Viewer */}
             <div style={{ flex: 1, overflow: "auto", minHeight: "400px" }}>
               <iframe
-                src={`http://localhost:5000${consentGame.consent_form_url}`}
+                src={`${consentGame.consent_form_url}`}
                 title="Consent Form"
                 style={{ width: "100%", height: "100%", minHeight: "400px", border: "none" }}
               />

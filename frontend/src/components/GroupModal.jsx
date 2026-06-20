@@ -17,9 +17,9 @@ export default function GroupModal({ group, onClose, onViewProject }) {
             try {
                 // Parallel fetch
                 const [detailsRes, projectsRes] = await Promise.all([
-                    fetch(`http://localhost:5000/groups/${group.id}`, {
+                    fetch(`/groups/${group.id}`, {
       credentials: "include", headers: {} }),
-                    fetch(`http://localhost:5000/groups/${group.id}/games`, {
+                    fetch(`/groups/${group.id}/games`, {
       credentials: "include", headers: {} })
                 ]);
 
@@ -34,7 +34,7 @@ export default function GroupModal({ group, onClose, onViewProject }) {
     async function sendInvite() {
         if (!inviteEmail) return;
         try {
-                        const res = await fetch(`http://localhost:5000/groups/${group.id}/invite`, {
+                        const res = await fetch(`/groups/${group.id}/invite`, {
       credentials: "include",
                 method: "POST",
                 headers: {

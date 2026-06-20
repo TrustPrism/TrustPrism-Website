@@ -17,7 +17,7 @@ export default function VerifyEmail() {
     const verify = async () => {
       const token = searchParams.get("token");
       try {
-        const response = await fetch(`http://localhost:5000/auth/verify-email?token=${token}`);
+        const response = await fetch(`/auth/verify-email?token=${token}`);
         if (response.ok) {
           const data = await response.json();
           setStatus("success");
